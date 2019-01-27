@@ -1,27 +1,21 @@
 package rmiServer;
 
+import java.rmi.AlreadyBoundException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Scanner;
 
 //import dao.DatabaseConnection;
-import javafx.application.Application;
-import javafx.stage.Stage;
 
-/**
- *
- * @author Elia Al Geith 
- */
-public class Server extends Application{
+public class ServerC {
 
-    private Scanner input;
+	private static Scanner input;
 
-	@Override
-    public void start(Stage primaryStage) throws Exception {
+	public static void main(String[] args) throws RemoteException, AlreadyBoundException {
+		input = new Scanner(System.in);
         
-        input = new Scanner(System.in);
-        
-        System.out.println("Set the Server ... \n ===================== \n");
+        System.out.println("Set the Server ... \n=====================\n");
         System.out.println("Enter hostname IP address : ");
         String hostname = input.nextLine();
         System.out.println("Enter server port : ");
@@ -32,8 +26,7 @@ public class Server extends Application{
         
         System.setProperty("java.rmi.server.hostname", hostname);
         
-       // DatabaseConnection conn =  new DatabaseConnection();
-       // DatabaseConnection.connectToDataBase();
+        //DatabaseConnection.connectToDataBase();
         
         Registry registry = LocateRegistry.createRegistry(port);
         
@@ -44,11 +37,8 @@ public class Server extends Application{
         registry.bind("service", contentServiceImpl);
         
         System.out.println("Server is working very well keep going !!!");
-        
-    }
-    
-    public static void main(String[] args) {
-        launch(args);
-    }
-    
+
+
+	}
+
 }
