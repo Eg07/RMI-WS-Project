@@ -20,8 +20,8 @@ public interface ContentService extends Remote {
     
     void deleteContent(int id) throws RemoteException;
     
-    FileOutputStream getContentById(int id) throws RemoteException;
-    FileOutputStream getContentByName(String title) throws RemoteException;
+    FileOutputStream getContentById(int id, String extension) throws RemoteException;
+    FileOutputStream getContentByName(String title, String extension) throws RemoteException;
     
     List<Content> getByTopic(String topic) throws RemoteException;
     

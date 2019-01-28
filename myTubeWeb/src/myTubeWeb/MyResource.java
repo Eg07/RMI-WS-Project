@@ -167,14 +167,14 @@ public class MyResource {
 	@GET
 	@Path("/getId")
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
-	public Response downloadById(@QueryParam("id") String id) throws Exception {
+	public Response downloadById(@QueryParam("id") String id, @QueryParam("extension") String extension) throws Exception {
 
 		ContentServiceImpl dao = new ContentServiceImpl();
 		try {
 			if (id == null)
 				return Response.status(400).entity("Error: please enter content's id !").build();
 
-			dao.getContentById(Integer.parseInt(id));
+			dao.getContentById(Integer.parseInt(id), extension);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -187,14 +187,14 @@ public class MyResource {
 	@GET
 	@Path("/getName")
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
-	public Response downloadByName(@QueryParam("name") String name) throws Exception {
+	public Response downloadByName(@QueryParam("name") String name , @QueryParam("extension") String extension) throws Exception {
 
 		ContentServiceImpl dao = new ContentServiceImpl();
 		try {
 			if (name == null)
 				return Response.status(400).entity("Error: please enter content's id !").build();
 
-			dao.getContentByName(name);
+			dao.getContentByName(name,extension);
 
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -150,7 +150,7 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 	}
 
 	@Override
-	public FileOutputStream getContentById(int id) throws RemoteException {
+	public FileOutputStream getContentById(int id, String extension) throws RemoteException {
 		try {
 			System.out.print("\nClient " + java.rmi.server.RemoteServer.getClientHost()
 					+ " request to download the content with id " + id);
@@ -176,7 +176,7 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 				Blob blob = rs.getBlob("file");
 				BufferedInputStream is = new BufferedInputStream(blob.getBinaryStream());
 
-				File file = new File("/home/karo/Desktop/RMI-Don/" + filename + ".jpg");
+				File file = new File("/home/karo/Desktop/RMI-Don/" + filename + "."+extension);
 				FileOutputStream output = new FileOutputStream(file);
 
 				byte[] buffer = new byte[1024];
@@ -206,7 +206,7 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 		return null;
 	}
 	@Override
-	public FileOutputStream getContentByName(String title) throws RemoteException{
+	public FileOutputStream getContentByName(String title, String extension) throws RemoteException{
 		try {
 			System.out.print("\nClient " + java.rmi.server.RemoteServer.getClientHost()
 					+ " request to download the content with title " + title);
@@ -232,7 +232,7 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 				Blob blob = rs.getBlob("file");
 				BufferedInputStream is = new BufferedInputStream(blob.getBinaryStream());
 
-				File file = new File("/home/karo/Desktop/RMI-Don/" + filename + ".jpg");
+				File file = new File("/home/karo/Desktop/RMI-Don/" + filename + "."+extension);
 				FileOutputStream output = new FileOutputStream(file);
 
 				byte[] buffer = new byte[1024];

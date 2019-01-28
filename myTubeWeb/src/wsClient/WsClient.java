@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 
@@ -176,7 +177,12 @@ public class WsClient {
 				}
 				id = scanner.nextInt();
 				
-				downloadId(String.valueOf(id));
+				String extension;
+				
+				System.out.println("\tplease enter the file extension: ");
+				extension = scanner.next();
+				
+				downloadId(String.valueOf(id),extension);
 				try {
 					TimeUnit.SECONDS.sleep(2);
 				} catch (InterruptedException e) {
@@ -187,12 +193,15 @@ public class WsClient {
 			}
 			
 			else if(c == 'n' || c == 'N' ) {
-				String title;
+				String title,extension;
 				
 				System.out.println("\tplease enter the title: ");
 				title = scanner.next();
 				
-				downloadName(title);
+				System.out.println("\tplease enter the file extension: ");
+				extension = scanner.next();
+				
+				downloadName(title,extension);
 				try {
 					TimeUnit.SECONDS.sleep(2);
 				} catch (InterruptedException e) {
@@ -373,9 +382,9 @@ public class WsClient {
 		}
 	}
 	
-	private static void downloadId(String id) {
+	private static void downloadId(String id , String extension) {
 		try {
-			URL url = new URL("http://localhost:8080/myTubeWeb/rest/getId?id="+id);
+			URL url = new URL("http://localhost:8080/myTubeWeb/rest/getId?id="+id+"&extension="+extension);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setDoOutput(true);
 			conn.setRequestProperty("Accept", MediaType.APPLICATION_OCTET_STREAM);
@@ -397,9 +406,9 @@ public class WsClient {
 		}
 	}
 	
-	private static void downloadName(String name) {
+	private static void downloadName(String name , String extension) {
 		try {
-			URL url = new URL("http://localhost:8080/myTubeWeb/rest/getName?name="+name);
+			URL url = new URL("http://localhost:8080/myTubeWeb/rest/getName?name="+name+"&extension="+extension);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setDoOutput(true);
 			conn.setRequestProperty("Accept", MediaType.APPLICATION_OCTET_STREAM);
