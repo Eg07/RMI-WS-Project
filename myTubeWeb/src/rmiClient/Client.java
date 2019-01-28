@@ -13,11 +13,12 @@ import java.util.concurrent.TimeUnit;
 
 
 import model.Content;
-import rmiService.ContentService;
+import rmiServer.ContentServiceImpl;
+
 
 public class Client {
 
-	private static ContentService contentService;
+	private static ContentServiceImpl contentService;
 	private static Scanner input;
 
 	public static void main(String[] args) throws NotBoundException, IOException {
@@ -35,7 +36,7 @@ public class Client {
 
 		Registry registry = LocateRegistry.getRegistry(ip, port);
 
-		contentService = (ContentService) registry.lookup("service");
+		contentService = (ContentServiceImpl) registry.lookup("service");
 
 		char c = 'c';
 		System.out.println("\t\t\t\t\t\t-----------------------------------------");

@@ -22,6 +22,7 @@ import javax.swing.JOptionPane;
 
 import dao.DatabaseConnection;
 import model.Content;
+import model.User;
 import rmiService.ContentService;
 
 /**
@@ -479,6 +480,43 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	public boolean checkUser(User user) {
+		String query = "select name, password from webservice.user where name = '" + user.getName() 
+		+ "' and password = '" + user.getPassword() + "' ;";
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+
+		try {
+			try {
+				pst = DatabaseConnection.connectToDataBase().prepareStatement(query);
+				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			pst.execute();
+			rs = pst.executeQuery();
+			
+			while (rs.next()) {
+				if(rs.getString("name") != null && rs.getString("password") != null ) 
+					return true;	
+			}
+
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
+			}
+		}
+
+		return false;
 	}
 
 }

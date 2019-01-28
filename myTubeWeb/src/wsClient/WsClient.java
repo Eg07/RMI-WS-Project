@@ -21,7 +21,7 @@ import model.Content;
 import rmiService.ContentService;
 
 public class WsClient {
-
+	private static boolean logStatus;
 	private static Scanner scanner;
 	private static ContentService contentService;
 
@@ -30,20 +30,21 @@ public class WsClient {
 		
 		//input = new Scanner(System.in);
 
-		System.out.println("Connect to Server ... \n=====================\n");
-		System.out.println("Enter server IP address : ");
+		System.out.println("\tConnect to Server ... \n\t=====================\n");
+		System.out.println("\tEnter server IP address : ");
 		String ip = scanner.nextLine();
 
-		System.out.println("Enter server port : ");
+		System.out.println("\tEnter server port : ");
 
 		int port = scanner.nextInt();
 
-		System.out.println("===================================");
+		System.out.println("\t===================================");
 
 		Registry registry = LocateRegistry.getRegistry(ip, port);
 
 		contentService = (ContentService) registry.lookup("service");
 		
+		login();
 		
 		char c = 'c';
 		System.out.println("\t\t\t\t\t\t-----------------------------------------");
@@ -419,6 +420,33 @@ public class WsClient {
 			e.printStackTrace();
 		}
 	}
+	
+	private static void checkUser(String name, String password) {
+		try {
+			URL url = new URL("http://localhost:8080/myTubeWeb/rest/checkUser?name="+name+"&password="+password);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setDoOutput(true);
+			conn.setRequestProperty("Accept", MediaType.APPLICATION_JSON);
+			conn.setRequestMethod("GET");
+			
+			if (conn.getResponseCode() != 200 ) {
+				throw new RuntimeException("Failed: HTTP error code: " + conn.getResponseCode());
+			}
+			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			String output;
+			
+			while ((output = br.readLine()) != null) {
+				logStatus = Boolean.parseBoolean(output);
+				System.out.println("\nClient check user. Response: " + output);
+			}
+			conn.disconnect();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private static void opt() {
 		System.out.println("\t\t\t\t\t\t-----------------------------------------");
 		System.out.println("\t\t\t\t\t\t| Please pick an option                 |");
@@ -432,6 +460,33 @@ public class WsClient {
 		System.out.println("\t\t\t\t\t\t| n : to download a contnet with name   |");
 		System.out.println("\t\t\t\t\t\t| e : to exit                           |");
 		System.out.println("\t\t\t\t\t\t-----------------------------------------");
+
+	}
+	
+	private static void login() {
+		while(!logStatus) {
+			String userName, userPassWord;
+			
+			System.out.println("\tplease enter user's name: ");
+			userName = scanner.next();
+			
+			System.out.println("\tplease enter user's password: ");
+			userPassWord = scanner.next();
+	
+			
+			checkUser(userName, userPassWord);
+			if(logStatus)
+				System.out.println("Log in !!!!");
+			else {
+				System.out.println("User name or password is wrong !");
+			}
+		}
+		
+		try {
+			TimeUnit.SECONDS.sleep(2);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
 	}
 

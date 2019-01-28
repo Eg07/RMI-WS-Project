@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import model.Content;
+import model.User;
 import rmiServer.ContentServiceImpl;
 
 @RequestScoped
@@ -201,5 +202,34 @@ public class MyResource {
 
 		}
 		return Response.ok("The content has been downloaded it \n Go to download Dir !").build();
+	}
+	
+	@GET
+	@Path("/checkUser")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response checkUser(@QueryParam("name") String name, @QueryParam("password") String password) throws Exception {
+
+		ContentServiceImpl dao = new ContentServiceImpl();
+		try {
+			if (name == null)
+				return Response.status(400).entity("Error: please enter user's name !").build();
+			
+			if (password == null)
+				return Response.status(400).entity("Error: please enter user's password !").build();
+			
+			User user = new User(name,password);
+			boolean temp = dao.checkUser(user);
+			
+			if (temp) {
+				return Response.ok("true").build();
+			}else 
+				return Response.ok("false").build();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Response.status(500).entity("Server was not able to process your request !").build();
+
+		}
+		//return Response.ok("Log in !!! ").build();
 	}
 }
