@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 
@@ -23,6 +22,7 @@ import rmiService.ContentService;
 
 public class WsClient {
 	private static boolean logStatus;
+	private static int user_id;
 	private static Scanner scanner;
 	private static ContentService contentService;
 
@@ -83,6 +83,7 @@ public class WsClient {
 				cont.setFilePath(path);
 				cont.setTitle(title);
 				cont.setTopic(topic);
+				cont.setUser_id(user_id);
 				postNewContent(cont);
 				try {
 					TimeUnit.SECONDS.sleep(2);
@@ -344,7 +345,7 @@ public class WsClient {
 			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 			String output;
 			while ((output = br.readLine()) != null) {
-				System.out.println("\nClient Search. Response: " + output);
+				System.out.println("\nClient Update Content. Response: " + output);
 			}
 			conn.disconnect();
 		} catch (MalformedURLException e) {
@@ -445,7 +446,10 @@ public class WsClient {
 			String output;
 			
 			while ((output = br.readLine()) != null) {
-				logStatus = Boolean.parseBoolean(output);
+				if(isInteger(output)) {
+					user_id = Integer.parseInt(output);
+					logStatus = true;
+				}
 				System.out.println("\nClient check user. Response: " + output);
 			}
 			conn.disconnect();
@@ -498,5 +502,17 @@ public class WsClient {
 		}
 
 	}
+	
+	private static boolean isInteger(String s) {
+	    try { 
+	        Integer.parseInt(s); 
+	    } catch(NumberFormatException e) { 
+	        return false; 
+	    } catch(NullPointerException e) {
+	        return false;
+	    }
+	    return true;
+	}
+
 
 }

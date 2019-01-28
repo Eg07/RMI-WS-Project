@@ -218,12 +218,12 @@ public class MyResource {
 				return Response.status(400).entity("Error: please enter user's password !").build();
 			
 			User user = new User(name,password);
-			boolean temp = dao.checkUser(user);
+			int temp = dao.checkUser(user);
 			
-			if (temp) {
-				return Response.ok("true").build();
+			if (temp != 0 ) {
+				return Response.ok(temp).build();
 			}else 
-				return Response.ok("false").build();
+				return Response.ok("error the user is not existing !").build();
 
 		} catch (Exception e) {
 			e.printStackTrace();

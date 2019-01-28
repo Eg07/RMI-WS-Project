@@ -18,7 +18,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JOptionPane;
 
 import dao.DatabaseConnection;
 import model.Content;
@@ -49,7 +48,7 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 			System.out.println(ex.getMessage());
 		}
 		try {
-			String query = "INSERT INTO webservice.content ( title , topic ,file ) VALUES ( ? ,  ?  , ? ) ";
+			String query = "INSERT INTO webservice.content ( title , topic ,file , user_id) VALUES ( ? ,  ?  , ? , ? ) ";
 
 			try {
 				pst = DatabaseConnection.connectToDataBase().prepareStatement(query);
@@ -66,6 +65,7 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 
 			// pst.setString(2, content.getPath());
 			pst.setString(2, content.getTopic());
+			pst.setInt(4, content.getUser_id());
 
 			pst.execute();
 
@@ -93,8 +93,7 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 		} catch (ServerNotActiveException ex) {
 			System.out.println(ex.getMessage());
 		}
-
-		String query = "update webservice.content set title = ? , file = ? , topic = ?  where id = " + id;
+		String query = "update webservice.content c inner join webservice.user u on c.user_id = u.user_id set title = ? , file = ? , topic = ?  where c.id = " + id;
 		try {
 			try {
 				pst = DatabaseConnection.connectToDataBase().prepareStatement(query);
@@ -127,8 +126,20 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 		} catch (ServerNotActiveException ex) {
 			System.out.println(ex.getMessage());
 		}
+		/*
+		 * DELETE t1,t2 FROM t1
+        	INNER JOIN
+    	t2 ON t2.ref = t1.id 
+		WHERE
+    t1.id = 1;
+    	You have an error in your SQL syntax; check the manual that corresponds 
+    	to your MySQL server version for the right syntax to use near 
+    	'AS c INNER JOIN webservice.user AS u ON c.user_id = u.user_id  WHERE c.id = 3' at line 1
 
-		String query = "delete from webservice.content where id = " + id;
+		 */
+		String query = "DELETE c "
+				+ "FROM webservice.content AS c INNER JOIN webservice.user AS u "
+				+ "ON c.user_id = u.user_id  WHERE c.id = " + id;
 
 		try {
 
@@ -145,7 +156,8 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 			System.out.println("[successful]");
 
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, e);
+			//JOptionPane.showMessageDialog(null, e);
+			System.out.println(e);
 		}
 	}
 
@@ -326,6 +338,7 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 				content.setId(Integer.parseInt(rs.getString("id")));
 				content.setTitle(rs.getString("title"));
 				content.setTopic(rs.getString("topic"));
+				content.setUser_id(rs.getInt("user_id"));
 				list.add(content);
 			}
 			pst.close();
@@ -482,12 +495,12 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 		}
 	}
 	
-	public boolean checkUser(User user) {
-		String query = "select name, password from webservice.user where name = '" + user.getName() 
+	public int checkUser(User user) {
+		String query = "select * from webservice.user where name = '" + user.getName() 
 		+ "' and password = '" + user.getPassword() + "' ;";
 		PreparedStatement pst = null;
 		ResultSet rs = null;
-
+		int user_id = 0;
 		try {
 			try {
 				pst = DatabaseConnection.connectToDataBase().prepareStatement(query);
@@ -500,9 +513,11 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 			rs = pst.executeQuery();
 			
 			while (rs.next()) {
-				if(rs.getString("name") != null && rs.getString("password") != null ) 
-					return true;	
+				if(rs.getString("name") != null && rs.getString("password") != null ) {
+					user_id = rs.getInt("user_id");
+				}	
 			}
+			return user_id;
 
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
@@ -516,7 +531,7 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 			}
 		}
 
-		return false;
+		return user_id;
 	}
 
 }

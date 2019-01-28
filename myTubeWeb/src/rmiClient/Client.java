@@ -167,8 +167,14 @@ public class Client {
 					input.next();
 				}
 				id = input.nextInt();
+				
+				String extension;
 
-				downloadId(String.valueOf(id));
+				System.out.println("\tplease enter file's extension: ");
+				extension = input.next();
+
+
+				downloadId(String.valueOf(id), extension);
 				try {
 					TimeUnit.SECONDS.sleep(2);
 				} catch (InterruptedException e) {
@@ -183,8 +189,14 @@ public class Client {
 
 				System.out.println("\tplease enter the title: ");
 				title = input.next();
+				
+				String extension;
 
-				downloadName(title);
+				System.out.println("\tplease enter file's extension: ");
+				extension = input.next();
+
+				
+				downloadName(title,extension);
 				try {
 					TimeUnit.SECONDS.sleep(2);
 				} catch (InterruptedException e) {
@@ -238,12 +250,12 @@ public class Client {
 			System.out.println(c.toString());
 	}
 
-	private static void downloadId(String id) throws NumberFormatException, RemoteException {
-		contentService.getContentById(Integer.parseInt(id));
+	private static void downloadId(String id, String ex) throws NumberFormatException, RemoteException {
+		contentService.getContentById(Integer.parseInt(id), ex);
 	}
 
-	private static void downloadName(String name) throws RemoteException {
-		contentService.getContentByName(name);
+	private static void downloadName(String name , String ex) throws RemoteException {
+		contentService.getContentByName(name,ex);
 	}
 
 	private static void opt() {
