@@ -9,6 +9,11 @@ public class User {
 		this.name = name;
 		this.password = password;
 	}
+	
+	public User() {
+		super();
+		
+	}
 
 	public int getId() {
 		return id;
@@ -21,4 +26,14 @@ public class User {
 	public String getPassword() {
 		return password;
 	}
+	public String getJson(){
+		return "{\"id\":\""+this.getId()+"\",\"name\":\""+this.getName()+"\", \"password\":\""+this.getPassword()+"\"}";
+	}
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", name=" + name + ", password=" + password + "]";
+	}
+	
+	
 }

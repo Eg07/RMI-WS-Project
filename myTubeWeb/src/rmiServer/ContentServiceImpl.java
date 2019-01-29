@@ -85,8 +85,9 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 	}
 
 	@Override
-	public void updateContent(Content content, int id) throws RemoteException {
+	public int updateContent(Content content, int id) throws RemoteException {
 		PreparedStatement pst = null;
+		int status = 0;
 		try {
 			System.out.print("\nClient " + java.rmi.server.RemoteServer.getClientHost()
 					+ " request to update the content with id " + id);
@@ -108,6 +109,7 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 			pst.execute();
 			// JOptionPane.showMessageDialog(null, "The content with " + id + " has been
 			// updated !");
+			status =pst.executeUpdate();
 			pst.close();
 			System.out.println("[successful]");
 
@@ -115,28 +117,20 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 			System.out.println("[failed]");
 			e.printStackTrace();
 		}
+		return status;
 	}
 
 	@Override
-	public void deleteContent(int id) throws RemoteException {
+	public int deleteContent(int id) throws RemoteException {
 		PreparedStatement pst = null;
+		int status = 0;
 		try {
 			System.out.print("\nClient " + java.rmi.server.RemoteServer.getClientHost()
 					+ " request to delete the content with id " + id);
 		} catch (ServerNotActiveException ex) {
 			System.out.println(ex.getMessage());
 		}
-		/*
-		 * DELETE t1,t2 FROM t1
-        	INNER JOIN
-    	t2 ON t2.ref = t1.id 
-		WHERE
-    t1.id = 1;
-    	You have an error in your SQL syntax; check the manual that corresponds 
-    	to your MySQL server version for the right syntax to use near 
-    	'AS c INNER JOIN webservice.user AS u ON c.user_id = u.user_id  WHERE c.id = 3' at line 1
-
-		 */
+		
 		String query = "DELETE c "
 				+ "FROM webservice.content AS c INNER JOIN webservice.user AS u "
 				+ "ON c.user_id = u.user_id  WHERE c.id = " + id;
@@ -146,19 +140,20 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 			try {
 				pst = DatabaseConnection.connectToDataBase().prepareStatement(query);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 			pst.execute();
-			// JOptionPane.showMessageDialog(null, "Content with ID " + id + " has been
-			// removed !");
+			
+			status =pst.executeUpdate(); 
 			pst.close();
 			System.out.println("[successful]");
-
+			return status;
 		} catch (SQLException e) {
-			//JOptionPane.showMessageDialog(null, e);
+			
 			System.out.println(e);
 		}
+		return status;
 	}
 
 	@Override
@@ -297,10 +292,11 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 			while (rs.next()) {
 				Content content = new Content();
 
-				content.setId(Integer.parseInt(rs.getString("id")));
+				content.setId(rs.getInt("id"));
 				content.setTitle(rs.getString("title"));
 				content.setFilePath(rs.getString("file"));
 				content.setTopic(rs.getString("topic"));
+				content.setUser_id(rs.getInt("user_id"));
 				list.add(content);
 			}
 			pst.close();
@@ -377,6 +373,7 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 				content.setTitle(rs.getString("title"));
 				content.setFilePath(rs.getString("file"));
 				content.setTopic(rs.getString("topic"));
+				content.setUser_id(rs.getInt("user_id"));
 				list.add(content);
 			}
 			pst.close();
@@ -413,6 +410,7 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 				content.setId(Integer.parseInt(rs.getString("id")));
 				content.setTitle(rs.getString("title"));
 				content.setTopic(rs.getString("topic"));
+				content.setUser_id(rs.getInt("user_id"));
 				list.add(content);
 			}
 			pst.close();
@@ -426,8 +424,9 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 		}
 	}
 
-	public void updateContentWs(String title, String topic, int id) throws RemoteException {
+	public int updateContentWs(String title, String topic, int id) throws RemoteException {
 		PreparedStatement pst = null;
+		int status = 0;
 		try {
 			System.out.print("\nClient " + java.rmi.server.RemoteServer.getClientHost()
 					+ " request to update the content with id " + id);
@@ -447,15 +446,15 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 			pst.setString(2, topic);
 
 			pst.execute();
-			// JOptionPane.showMessageDialog(null, "The content with " + id + " has been
-			// updated !");
+			status =pst.executeUpdate();
 			pst.close();
 			System.out.println("[successful]");
-
+			return status;
 		} catch (SQLException e) {
 			System.out.println("[failed]");
 			e.printStackTrace();
 		}
+		return status;
 	}
 
 	public List<Content> getByTopicWs(String topic) throws RemoteException {
@@ -482,6 +481,7 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 				content.setId(Integer.parseInt(rs.getString("id")));
 				content.setTitle(rs.getString("title"));
 				content.setTopic(rs.getString("topic"));
+				content.setUser_id(rs.getInt("user_id"));
 				list.add(content);
 			}
 			pst.close();
@@ -533,5 +533,41 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 
 		return user_id;
 	}
+	
+	public void addUser(User user) throws RemoteException {
+		PreparedStatement pst = null;
+		try {
+			System.out.print("\nClient " + java.rmi.server.RemoteServer.getClientHost()
+					+ " request to add a new user ... ");
+		} catch (ServerNotActiveException ex) {
+			System.out.println(ex.getMessage());
+		}
+		try {
+			String query = "INSERT INTO webservice.user ( name , password) VALUES ( ? ,  ? ) ";
+
+			try {
+				pst = DatabaseConnection.connectToDataBase().prepareStatement(query);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			pst.setString(1, user.getName());
+
+			pst.setString(2, user.getPassword());
+
+			pst.execute();
+
+			pst.close();
+			// resultSet.close();
+			System.out.print(" [successful]");
+		} catch (SQLException e) {
+			System.out.print(" [failed]");
+			System.out.println(e);
+
+		}
+	}
+
+
 
 }

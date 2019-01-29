@@ -18,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 
 
 import model.Content;
+import model.User;
 import rmiService.ContentService;
 
 public class WsClient {
@@ -45,7 +46,8 @@ public class WsClient {
 
 		contentService = (ContentService) registry.lookup("service");
 		
-		login();
+		//login();
+		welcome();
 		
 		char c = 'c';
 		System.out.println("\t\t\t\t\t\t-----------------------------------------");
@@ -68,14 +70,16 @@ public class WsClient {
 			}
 			// post a new content
 			else if(c == 'a' || c == 'A' ) {
-				String title, topic, path;
+				String title;
 				
 				System.out.println("\tplease enter the title: ");
 				title = scanner.next();
 				
+				String topic;
 				System.out.println("\tplease enter the topic: ");
 				topic = scanner.next();
 				
+				String path;
 				System.out.println("\tplease enter the path: ");
 				path = scanner.next();
 				
@@ -460,6 +464,35 @@ public class WsClient {
 		}
 	}
 	
+	private static void postNewUser(User user) {
+		try {
+			URL url = new URL("http://localhost:8080/myTubeWeb/rest/addUser");
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setDoOutput(true);
+			conn.setRequestMethod("POST");
+			conn.setRequestProperty("Content-Type", "application/json");
+			
+			String jsonFromPojo = user.getJson();
+			
+			OutputStream os = conn.getOutputStream();
+			os.write(jsonFromPojo.getBytes());
+			os.flush();
+			if (conn.getResponseCode() != 200 ) {
+				throw new RuntimeException("Failed: HTTP error code: " + conn.getResponseCode());
+			}
+			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			String output;
+			while ((output = br.readLine()) != null) {
+				System.out.println("\nClient POST. Response: " + output);
+			}
+			conn.disconnect();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private static void opt() {
 		System.out.println("\t\t\t\t\t\t-----------------------------------------");
 		System.out.println("\t\t\t\t\t\t| Please pick an option                 |");
@@ -476,6 +509,54 @@ public class WsClient {
 
 	}
 	
+	private static void welcome() throws IOException {
+		char c = 'c';
+		System.out.println("\t\t\t\t\t\t-----------------------------------------");
+		System.out.println("\t\t\t\t\t\t|please choose an option                |");
+		System.out.println("\t\t\t\t\t\t|x : to add a new user                  |");
+		System.out.println("\t\t\t\t\t\t|y : to log in with existing user       |");
+		System.out.println("\t\t\t\t\t\t-----------------------------------------");
+		boolean in = true;
+		while (in) {
+			c = (char) System.in.read();
+			//get all
+			if(c == 'x' || c == 'X' ) {
+				signIn();
+				try {
+					TimeUnit.SECONDS.sleep(2);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				System.out.println("\t\t\t\t\t\t good job now you are in our system      ");
+				System.out.println("\t\t\t\t\t\t please log in with your login data      ");
+				System.out.println("\t\t\t\t\t\t-----------------------------------------");
+				login();
+				in=false;
+			}
+			else if(c == 'y' || c == 'Y' ) {
+				login();
+				in = false;
+			}
+			else {
+				System.out.println("\t\t\t\t\t\twrong option please x or y               ");
+				continue;
+			}
+		}
+	}
+	
+	private static void signIn() {
+		String userName;
+		
+		System.out.println("\tplease enter user's name: ");
+		userName = scanner.next();
+		
+		String userPassWord;
+		System.out.println("\tplease enter user's password: ");
+		userPassWord = scanner.next();
+		
+		User user = new User(userName,userPassWord);
+		postNewUser(user);
+	}
 	private static void login() {
 		while(!logStatus) {
 			String userName, userPassWord;

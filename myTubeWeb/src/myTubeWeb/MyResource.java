@@ -125,20 +125,24 @@ public class MyResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	// @Consumes(MediaType.APPLICATION_JSON)
 	public Response delete(@QueryParam("id") String id) throws Exception {
-
+		int status = 0;
 		ContentServiceImpl dao = new ContentServiceImpl();
 		try {
 			if (id == null)
 				return Response.status(400).entity("Error: please enter content's id !").build();
 
-			dao.deleteContent(Integer.parseInt(id));
+			status = dao.deleteContent(Integer.parseInt(id));
+			
+			if(status != 0)
+				return Response.ok("The content has been removed !").build();
+			else 
+				return Response.ok("You can't remove the content  !").build();
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Response.status(500).entity("Server was not able to process your request !").build();
-
 		}
-		return Response.ok("The content has been removed !").build();
+		//return Response.ok("The content has been removed !").build();
 	}
 
 	@Path("/update")
@@ -149,19 +153,24 @@ public class MyResource {
 			@QueryParam("id") String id) throws Exception {
 
 		ContentServiceImpl dao = new ContentServiceImpl();
-
+		int status = 0;
 		try {
 			if (id == null)
 				return Response.status(400).entity("Error: please enter content's id !").build();
 
-			dao.updateContentWs(title, topic, Integer.parseInt(id));
+			status = dao.updateContentWs(title, topic, Integer.parseInt(id));
+			
+			if(status != 0)
+				return Response.ok("The content has been updated !").build();
+			else 
+				return Response.ok("You can't update the content  !").build();
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Response.status(500).entity("Server was not able to process your request !").build();
 		}
 
-		return Response.ok("The content has been updated!").build();
+		//return Response.ok("The content has been updated!").build();
 	}
 
 	@GET
@@ -231,5 +240,25 @@ public class MyResource {
 
 		}
 		//return Response.ok("Log in !!! ").build();
+	}
+	
+	@Path("/addUser")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response addUser(User user) throws Exception {
+
+		ContentServiceImpl dao = new ContentServiceImpl();
+
+		try {
+
+			dao.addUser(user);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Response.status(500).entity("Server was not able to process your request !").build();
+		}
+
+		return Response.ok("a new user  !").build();
 	}
 }

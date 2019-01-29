@@ -16,9 +16,9 @@ public interface ContentService extends Remote {
     
     void insertConent(Content content) throws RemoteException;
     
-    void updateContent(Content content, int id ) throws RemoteException;
+    int updateContent(Content content, int id ) throws RemoteException;
     
-    void deleteContent(int id) throws RemoteException;
+    int deleteContent(int id) throws RemoteException;
     
     FileOutputStream getContentById(int id, String extension) throws RemoteException;
     FileOutputStream getContentByName(String title, String extension) throws RemoteException;
