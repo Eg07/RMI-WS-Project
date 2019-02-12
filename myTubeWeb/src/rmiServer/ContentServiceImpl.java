@@ -434,7 +434,7 @@ public class ContentServiceImpl extends UnicastRemoteObject implements ContentSe
 			System.out.println(ex.getMessage());
 		}
 
-		String query = "update webservice.content set title = ? , topic = ?  where id = " + id;
+		String query = "update webservice.content c inner join webservice.user u on c.user_id = u.user_id set title = ?  , topic = ?  where c.id = " + id;
 		try {
 			try {
 				pst = DatabaseConnection.connectToDataBase().prepareStatement(query);

@@ -30,7 +30,6 @@ public class WsClient {
 	public static void main(String[] args) throws IOException, NotBoundException {
 		scanner = new Scanner(System. in);
 		
-		//input = new Scanner(System.in);
 
 		System.out.println("\tConnect to Server ... \n\t=====================\n");
 		System.out.println("\tEnter server IP address : ");
@@ -46,7 +45,6 @@ public class WsClient {
 
 		contentService = (ContentService) registry.lookup("service");
 		
-		//login();
 		welcome();
 		
 		char c = 'c';
@@ -272,7 +270,7 @@ public class WsClient {
 			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 			String output;
 			while ((output = br.readLine()) != null) {
-				System.out.println("\nClient POST. Response: " + output);
+				System.out.println("\nClient POST new Content. Response: " + output);
 			}
 			conn.disconnect();
 		} catch (MalformedURLException e) {
@@ -296,7 +294,7 @@ public class WsClient {
 			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 			String output;
 			while ((output = br.readLine()) != null) {
-				System.out.println("\nClient Search. Response: " + output);
+				System.out.println("\nClient Delete a contnent with id: "+id+" Response: " + output);
 			}
 			conn.disconnect();
 		} catch (MalformedURLException e) {
@@ -454,7 +452,7 @@ public class WsClient {
 					user_id = Integer.parseInt(output);
 					logStatus = true;
 				}
-				System.out.println("\nClient check user. Response: " + output);
+				//System.out.println("\nClient check user. Response: " + output);
 			}
 			conn.disconnect();
 		} catch (MalformedURLException e) {
@@ -483,7 +481,7 @@ public class WsClient {
 			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 			String output;
 			while ((output = br.readLine()) != null) {
-				System.out.println("\nClient POST. Response: " + output);
+				System.out.println("\nClient POST new User. Response: " + output);
 			}
 			conn.disconnect();
 		} catch (MalformedURLException e) {
